@@ -1,3 +1,12 @@
 #!/bin/sh
 
-echo "HOOK RAN" >> hook-test.txt
+AUTHOR=$(git log -1 --pretty=format:'%an')
+ROOT=$(git rev-parse --show-toplevel)
+
+if [ "$AUTHOR" = "destroyo123" ]; then
+    powershell.exe -c "(New-Object System.Media.SoundPlayer '$ROOT/sounds/etan.wav').PlaySync();"
+fi
+
+if [ "$AUTHOR" = "marenkalberer" ]; then
+    powershell.exe -c "(New-Object System.Media.SoundPlayer '$ROOT/sounds/maren.wav').PlaySync();"
+fi
