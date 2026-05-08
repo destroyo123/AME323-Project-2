@@ -15,10 +15,10 @@ case "$AUTHOR" in
         ;;
 esac
 
-OS="$(uname)"
+OS="$(uname -s)"
 
 if [[ "$OS" == "Darwin" ]]; then
     bash "$ROOT/scripts/play-sound.sh" "$SOUND"
-elif [[ "$OS" == *"MINGW"* ]] || [[ "$OS" == *"MSYS"* ]]; then
+else
     powershell.exe -ExecutionPolicy Bypass -File "$ROOT/scripts/play-sound.ps1" "$SOUND"
 fi
