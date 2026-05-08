@@ -1,0 +1,24 @@
+#!/bin/bash
+
+AUTHOR=$(git log -1 --pretty=format:'%an')
+ROOT=$(git rev-parse --show-toplevel)
+
+case "$AUTHOR" in
+    "marenkalberer")
+        SOUND="$ROOT/sounds/maren.wav"
+        ;;
+    "destroyo123")
+        SOUND="$ROOT/sounds/etan.wav"
+        ;;
+    *)
+        exit 0
+        ;;
+esac
+
+OS="$(uname)"
+
+if [[ "$OS" == "Darwin" ]]; then
+    bash "$ROOT/scripts/play-sound.sh" "$SOUND"
+elif [[ "$OS" == *"MINGW"* ]] || [[ "$OS" == *"MSYS"* ]]; then
+    powershell.exe -ExecutionPolicy Bypass -File "$ROOT/scripts/play-sound.ps1" "$SOUND"
+fi

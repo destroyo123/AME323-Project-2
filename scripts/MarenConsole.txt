@@ -1,0 +1,11 @@
+Hi Maren! Open a 'terminal' window
+In terminal, navigate to the folder of this repo
+by running this:
+
+cd "your filepath to this folder"
+
+Then run this:
+
+chmod +x scripts/play-sound.sh
+
+And now the play-sound.sh is executable! (for MacOS)

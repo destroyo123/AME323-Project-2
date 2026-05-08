@@ -1,0 +1,13 @@
+Hello! I am trying to design a method-of-characteristics nozzle targeting a specific Mach number, with a given exit diameter (M_e, h_n in notation). I need you to explain, like I’m a 5-year-old idiot how to go about the computations by using Riemann invariants L = nu + delta and R = nu - delta, for a rectangular nozzle cross section with a given number of waves n_waves. I’m working in MATLAB but I don’t want you to write any code yet. I want to do it myself but I’m struggling to understand the theory.
+
+
+
+I have already found the exit and throat heights, and I know that delta_max = nu_e/2 (nu_e is the prandtl-meyer nu at the exit, and the flow angles are ‘delta’), but I’m trying to understand how we start computing the other waves, and also how to figure out where the curve intersects with the nozzle.
+
+
+
+I have uploaded the PDF guide document for your reference on the assumptions we’re making. Please VERY CLEARLY AND EXPLICITLY state every step you’re doing, what assumptions are being used/made including known flow relations and whatnot, so I can fully understand why we do each step.
+
+
+
+The terminal with which I am communicating does not properly format for LaTeK math, but I want it to be readable. Feel free to format your message as LaTeK code I can run on my machine to make a readable response (or whatever you deem easier). Thank you so much!
