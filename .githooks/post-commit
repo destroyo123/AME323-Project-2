@@ -1,8 +1,6 @@
 #!/bin/sh
 
-# ===== DEBUG TOGGLE =====
 DEBUG=false
-# ========================
 
 AUTHOR=$(git config user.name)
 ROOT=$(git rev-parse --show-toplevel)
@@ -11,22 +9,24 @@ if [ "$DEBUG" = true ]; then
     echo "AUTHOR=$AUTHOR" >> "$ROOT/hook-debug.txt"
 fi
 
-play_sound () {
-    powershell.exe -c "(New-Object System.Media.SoundPlayer '$1').PlaySync();"
-}
-
 case "$AUTHOR" in
     "marenkalberer")
-        SOUND="$ROOT/sounds/maren.wav"
+        SOUND="maren.wav"
         ;;
     "destroyo123")
-        SOUND="$ROOT/sounds/etan.wav"
+        SOUND="etan.wav"
         ;;
     *)
         exit 0
         ;;
 esac
 
-if [ -n "$SOUND" ]; then
-    play_sound "$SOUND"
+FULL_PATH="$ROOT/sounds/$SOUND"
+
+OS="$(uname -s)"
+
+if [ "$OS" = "Darwin" ]; then
+    afplay "$FULL_PATH"
+else
+    powershell.exe -c "(New-Object System.Media.SoundPlayer '$FULL_PATH').PlaySync();"
 fi
