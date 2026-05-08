@@ -12,7 +12,7 @@
 % 
 
 %% Housekeeping:
-% Requires having the a few toolboxes installed for certain functions
+% Requires having the a few toolboxes (Aerospace Toolbox) installed for certain functions
 
 % Clear old variable values, outputs, and close old figures
 close all;
@@ -49,3 +49,46 @@ gamma = gamma_air; % since we're using air
 N_waves = 40; %Number of waves
 h_n = 350; %Nozzle height in mm
 h_n = h_n/1000; % Converted to m
+
+%% Functions
+% Equations and Relations I mostly made for other homeworks & discussion
+% problems. Equations come from NACA1135 unless otherwise stated.
+
+%%
+% *Prandtl-Meyer angle 'nu'*
+% 
+% *Inputs:*
+%
+%
+% * Unperturbed Mach (AKA M1)
+% * Ratio of specific heats, 'gamma' of flow, usually 1.4
+% 
+% *Outputs:*
+%
+% * Prandtl-Meyer angle 'nu' (degrees)
+%
+function prandtlMeyerAngle = nu(M, gamma)
+    prandtlMeyerAngle = sqrt((gamma+1)/(gamma-1)) * atand(sqrt(((gamma-1)/(gamma+1))*(M.^2 - 1))) - atand(sqrt(M.^2 - 1));
+    % OUTPUTS DEGREES
+end
+%
+%%
+% *Mach from prandtl-meyer angle (IN DEGREES)* - Requires the Aerospace
+% Toolbox
+%
+% *Inputs:*
+%
+% * Prandtl-Meyer angle of local flow 'nu' (degrees)
+% * Flow ratio of specific heats 'gamma,' usually 1.4
+%
+% 
+%
+% *Outputs:*
+%
+% * Local mach number 'M'
+%
+%
+%
+function mach = meyerMach(gamma, nu)
+    mach = flowprandtlmeyer(gamma, nu, 'nu');
+end
