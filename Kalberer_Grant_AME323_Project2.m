@@ -40,32 +40,29 @@ gamma_helium = 1.67;
 
 gamma = gamma_air; % since we're using air
 
-% Given Relations
+% Liquid temperatures
+Tl_helium = 2.2; % Kelvin
+Tl_air = 50; % Kelvin
 
-% Area ratio equation
-AeAt = @(M) (1/M) * (2/(gamma+1) * (1 + (((gamma-1)/2) * M^2 )))^( (gamma+1)/(2*(gamma-1)) );
+% Temperature the fluid MUST stay above
+Tl = Tl_air; % Temperature our fluid (air) liquifies at
 
 % Parameters
 
 M_e = 6; % Exit mach
+M_t = 1; % Throat
 N_waves = 40; %Number of waves
 
 h_n = 350; %Nozzle height in mm
 h_n = h_n/1000; % Converted to m
 
-h_t = (h_n ^2 / AeAt(M_e))^0.5; % Height of throat in meters
-
-
-
-%% Setting up the arrays and contour stuff
-% todo: list what we put in here
-
-% Table for nozzle contour x, y, nu, delta, L, R or something
-
 
 %% Functions
 % Equations and Relations I mostly made for other homeworks & discussion
 % problems. Equations come from NACA1135 unless otherwise stated.
+
+% Area ratio equation
+AeAt = @(M) (1/M) * (2/(gamma+1) * (1 + (((gamma-1)/2) * M^2 )))^( (gamma+1)/(2*(gamma-1)) );
 
 %%
 % *Prandtl-Meyer angle 'nu'*
@@ -119,3 +116,25 @@ end
 %
 % * Post-Wave intersection Prandtl-Meyer angle 'nu' (degrees)
 %
+
+
+%% Pre-Calculations (Task 1)
+% Easily-Derivable values found before calculating the complicated contour
+
+% Ae/At also called (Ae/A*)
+AreaRatio = AeAt(M_e);
+
+% % Height of throat for a 3D nozzle with a circular cross-section.
+% NOT USED FOR THIS PROJECT.
+% h_t = (h_n ^2 /AreaRatio )^0.5;
+
+% It was specified to do a planar / 2D nozzle... Like so:
+% Height of throat for a 2D nozzle (rectangular cross section)
+h_t = h_n/AreaRatio;
+
+% Prandtl-Meyer angle 'nu' at exit
+nu_e = nu(M_e, gamma); % degrees
+nu_t = nu(M_t, gamma); % Degrees
+
+% Max flow angle anywhere in the nozzle
+delta_max = nu_e / 2; % degrees
