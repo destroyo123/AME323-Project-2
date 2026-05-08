@@ -44,3 +44,7 @@ gamma = gamma_air; % since we're using air
 
 %% Setting up the arrays and variables
 % todo: list what we put in here
+
+
+N = 40; %Number of waves
+h_n = 350; %Nozzle height in mm
