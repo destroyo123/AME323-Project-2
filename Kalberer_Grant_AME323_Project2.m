@@ -40,15 +40,28 @@ gamma_helium = 1.67;
 
 gamma = gamma_air; % since we're using air
 
+% Given Relations
 
+% Area ratio equation
+AeAt = @(M) (1/M) * (2/(gamma+1) * (1 + (((gamma-1)/2) * M^2 )))^( (gamma+1)/(2*(gamma-1)) );
 
-%% Setting up the arrays and variables
-% todo: list what we put in here
+% Parameters
 
-
+M_e = 6; % Exit mach
 N_waves = 40; %Number of waves
+
 h_n = 350; %Nozzle height in mm
 h_n = h_n/1000; % Converted to m
+
+h_t = (h_n ^2 / AeAt(M_e))^0.5; % Height of throat in meters
+
+
+
+%% Setting up the arrays and contour stuff
+% todo: list what we put in here
+
+% Table for nozzle contour x, y, nu, delta, L, R or something
+
 
 %% Functions
 % Equations and Relations I mostly made for other homeworks & discussion
@@ -99,10 +112,10 @@ end
 % *Inputs:*
 %
 %
-% * Unperturbed Mach (AKA M1)
-% * Ratio of specific heats, 'gamma' of flow, usually 1.4
+% * Left characteristic L = nu - delta
+% * Right characteristic R = nu + delta
 % 
 % *Outputs:*
 %
-% * Prandtl-Meyer angle 'nu' (degrees)
+% * Post-Wave intersection Prandtl-Meyer angle 'nu' (degrees)
 %
