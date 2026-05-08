@@ -1,12 +1,32 @@
 #!/bin/sh
 
-AUTHOR=$(git log -1 --pretty=format:'%an')
+# ===== DEBUG TOGGLE =====
+DEBUG=false
+# ========================
+
+AUTHOR=$(git config user.name)
 ROOT=$(git rev-parse --show-toplevel)
 
-if [ "$AUTHOR" = "destroyo123" ]; then
-    powershell.exe -c "(New-Object System.Media.SoundPlayer '$ROOT/sounds/etan.wav').PlaySync();"
+if [ "$DEBUG" = true ]; then
+    echo "AUTHOR=$AUTHOR" >> "$ROOT/hook-debug.txt"
 fi
 
-if [ "$AUTHOR" = "marenkalberer" ]; then
-    powershell.exe -c "(New-Object System.Media.SoundPlayer '$ROOT/sounds/maren.wav').PlaySync();"
+play_sound () {
+    powershell.exe -c "(New-Object System.Media.SoundPlayer '$1').PlaySync();"
+}
+
+case "$AUTHOR" in
+    "marenkalberer")
+        SOUND="$ROOT/sounds/maren.wav"
+        ;;
+    "destroyo123")
+        SOUND="$ROOT/sounds/etan.wav"
+        ;;
+    *)
+        exit 0
+        ;;
+esac
+
+if [ -n "$SOUND" ]; then
+    play_sound "$SOUND"
 fi
