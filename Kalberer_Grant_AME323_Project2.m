@@ -48,3 +48,4 @@ gamma = gamma_air; % since we're using air
 
 N_waves = 40; %Number of waves
 h_n = 350; %Nozzle height in mm
+h_n = h_n/1000; % Converted to m
