@@ -1,19 +1,17 @@
 Hi Maren! Open a 'terminal' window
 In terminal, navigate to the folder of this repo
 by running this:
+(or in Github Desktop app at the top, click "Repository" and click "Open in Terminal")
 
 cd "your filepath to this folder"
 
-and run these commands in that terminal:
-
-and run:
+Then run these commands in that terminal to make the sound-playing scripts executable in MacOS.
 
 chmod +x .githooks/post-merge
 chmod +x scripts/play-sound.sh
 
 This makes these scripts executable on MacOS...
 
-Then also BOTH OF US need to run this
-in our copy of the repo root
+Then also BOTH OF US need to run this to make GitHub run stuff when changes happen.
 
 git config core.hooksPath .githooks
