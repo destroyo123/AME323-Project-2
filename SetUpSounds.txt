@@ -1,11 +1,10 @@
-Hi Maren! Open a 'terminal' window
-In terminal, navigate to the folder of this repo
-by running this:
-(or in Github Desktop app at the top, click "Repository" and click "Open in Terminal")
+Hi Maren! Open a 'terminal' window by doing one of the following:
+ - In Github Desktop app at the top, click "Repository" and click "Open in Terminal"
+ - Or just open the "Terminal" app on your computer and run the following:
 
 cd "your filepath to this folder"
 
-Then run these commands in that terminal to make the sound-playing scripts executable in MacOS.
+Next, run these commands in that terminal to make the sound-playing scripts executable in MacOS.
 
 chmod +x .githooks/post-merge
 chmod +x scripts/play-sound.sh
