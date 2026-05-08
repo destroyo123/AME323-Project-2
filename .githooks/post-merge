@@ -1,24 +1,2 @@
-#!/bin/bash
-
-AUTHOR=$(git log -1 --pretty=format:'%an')
-ROOT=$(git rev-parse --show-toplevel)
-
-case "$AUTHOR" in
-    "marenkalberer")
-        SOUND="$ROOT/sounds/maren.wav"
-        ;;
-    "destroyo123")
-        SOUND="$ROOT/sounds/etan.wav"
-        ;;
-    *)
-        exit 0
-        ;;
-esac
-
-OS="$(uname -s)"
-
-if [[ "$OS" == "Darwin" ]]; then
-    bash "$ROOT/scripts/play-sound.sh" "$SOUND"
-else
-    powershell.exe -ExecutionPolicy Bypass -File "$ROOT/scripts/play-sound.ps1" "$SOUND"
-fi
+#!/bin/sh
+bash "$(git rev-parse --show-toplevel)/.githooks/play-sound.sh"
