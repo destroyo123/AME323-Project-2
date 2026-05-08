@@ -94,7 +94,7 @@ function mach = meyerMach(gamma, nu)
 end
 
 %%
-% Post-Intersection nu
+% Post-Intersection
 % 
 % *Inputs:*
 %
