@@ -87,7 +87,7 @@ AeAt = @(M) (1/M) * (2/(gamma+1) * (1 + (((gamma-1)/2) * M^2 )))^( (gamma+1)/(2*
 %
 % *Inputs:*
 %
-% * Prandtl-Meyer angle of local flow 'nu' (degrees)
+% * Prandtl-Meyer angle of local flow 'nu' (degrees) (CAN BE AN ARRAY)
 % * Flow ratio of specific heats 'gamma,' usually 1.4
 %
 % 
@@ -97,7 +97,19 @@ AeAt = @(M) (1/M) * (2/(gamma+1) * (1 + (((gamma-1)/2) * M^2 )))^( (gamma+1)/(2*
 % * Local mach number 'M'
 %
 %
-    meyerMach = @(nu) flowprandtlmeyer(gamma, nu, 'nu');
+function M = meyerMach(nu,gamma)
+% * USES THE AEROSPACE TOOLBOX 'flowprandtlmeyer()
+if(isscalar(nu))
+    % If nu is a scalar, you can just use this function.
+    M = flowprandtlmeyer(gamma, nu, 'nu');
+else
+    % if nu is a vector/matrix, you have to go 1 by 1 with this function
+    M = zeros(length(nu), 1);
+    for i = 1:length(nu)
+        M(i,1) = flowprandtlmeyer(gamma, nu(i), 'nu');
+    end
+end
+end
 %%
 % Post-Intersection nu
 % 
@@ -164,9 +176,9 @@ nuThroatCircle = deltaThroatCircle;
 
 % And calcualte the mach angles upon which the characteristics go:
 % first it needs to make mu a function of nu:
-muFromNu = @(nu) asind(1/meyerMach(nu));
+muFromNu = @(nu) asind(1/meyerMach(nu,gamma));
 
-muThroatCircle = muFromNu(nuThroatCircle);
+muThroatCircle(:,1) = muFromNu(nuThroatCircle);
 
 % Right-running (expansion waves that go down) characteristics from the
 % throat (degrees)
@@ -201,6 +213,5 @@ mu_arr(1,1) = 90; % deg
 
 y_arr(1,1) = 0;
 x_arr(1,1) = xThroatCircle(2,1) + ( y_arr(1,1) - yThroatCircle(2,1)  ) / tand((deltaThroatCircle(2,1) - muThroatCircle(2,1) - muThroatCircle(2,1))/2) ; 
-x(1,1) = xarc(2,1) + (y(1,1) - yarc(2,1))/tand((ThetaArc(2,1) - MuArc(2,1) - MuArc(2,1))/2);
 
 % Calculates the nodes on the first left (up) characteristic line "C+"
