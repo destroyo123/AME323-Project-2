@@ -73,16 +73,13 @@ AeAt = @(M) (1/M) * (2/(gamma+1) * (1 + (((gamma-1)/2) * M^2 )))^( (gamma+1)/(2*
 %
 %
 % * Unperturbed Mach (AKA M1)
-% * Ratio of specific heats, 'gamma' of flow, usually 1.4
 % 
 % *Outputs:*
 %
 % * Prandtl-Meyer angle 'nu' (degrees)
 %
-function prandtlMeyerAngle = nu(M, gamma)
-    prandtlMeyerAngle = sqrt((gamma+1)/(gamma-1)) * atand(sqrt(((gamma-1)/(gamma+1))*(M.^2 - 1))) - atand(sqrt(M.^2 - 1));
+    nu = @(M) sqrt((gamma+1)/(gamma-1)) * atand(sqrt(((gamma-1)/(gamma+1))*(M.^2 - 1))) - atand(sqrt(M.^2 - 1));
     % OUTPUTS DEGREES
-end
 %
 %%
 % *Mach from prandtl-meyer angle (IN DEGREES)* - Requires the Aerospace
@@ -100,11 +97,7 @@ end
 % * Local mach number 'M'
 %
 %
-%
-function mach = meyerMach(gamma, nu)
-    mach = flowprandtlmeyer(gamma, nu, 'nu');
-end
-
+    meyerMach = @(nu) flowprandtlmeyer(gamma, nu, 'nu');
 %%
 % Post-Intersection nu
 % 
@@ -135,8 +128,8 @@ AreaRatio = AeAt(M_e);
 h_t = h_n/AreaRatio;
 
 % Prandtl-Meyer angle 'nu' at exit
-nu_e = nu(M_e, gamma); % degrees
-nu_t = nu(M_t, gamma); % Degrees
+nu_e = nu(M_e); % degrees
+nu_t = nu(M_t); % Degrees
 
 % Max flow angle anywhere in the nozzle
 delta_max = nu_e / 2; % degrees
@@ -158,6 +151,8 @@ mu_arr = zeros(N,N); % Mach angles at nodes (deg)
 x_arr = zeros(N,N); % x values of nodes (m)
 y_arr = zeros(N,N); % y values of nodes (m)
 
+%% Circular-Arc Throat Calculations (Task 1)
+
 % Circular throat curve from horizontal to delta_max (degrees)
 deltaThroatCircle(:, 1) = (0:ddelta:delta_max);
 
@@ -176,4 +171,6 @@ RThroatCircle = deltaThroatCircle + nuThroatCircle;
 arcpoints = @(delta) deal( h_t .* sind(delta), h_t.*(2-cosd(delta)));
 % CHECKED AGAINST DESMOS: https://www.desmos.com/calculator/x4hd9teecj
 
+% Actually computes the coords of the circular part of the nozzle expanding.
 [xThroatCircle, yThroatCircle] = arcpoints(deltaThroatCircle);
+
