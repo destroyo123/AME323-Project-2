@@ -153,12 +153,17 @@ x_arr = zeros(N,N); % x values of nodes (m)
 y_arr = zeros(N,N); % y values of nodes (m)
 
 %% Circular-Arc Throat Calculations (Task 1)
+% Starting with the non-sharp throat comprised of a circular arc of radius
+% equal to the throat radius. Discretize using the number of waves.
 
 % Circular throat curve from horizontal to delta_max (degrees)
 deltaThroatCircle(:, 1) = (0:ddelta:delta_max);
 
 % Instantiate the 'nu' array with the same angle values
 nuThroatCircle = deltaThroatCircle;
+
+% And calcualte the mach angles upon which the characteristics go:
+muThroatCircle = nu(:,1);
 
 % Right-running (expansion waves that go down) characteristics from the
 % throat (degrees)
@@ -181,6 +186,9 @@ delta_arr(:,1) = deltaThroatCircle(2:length(RThroatCircle),1);
 nu_arr(:,1) = delta_arr(:,1);
 L_arr(:,1) = delta_arr(:,1) - nu_arr(:,1);
 
+%% Calculating Centerline Reflections (Task 1)
+% The first big step to getting the nozzle geometry.
+
 % Throat can't be calculated exactly at M=1 or it breaks, so we give it a
 % slight increase by 'eps'
 eps = 1e-4;
@@ -188,4 +196,8 @@ M_arr(1,1) = 1+eps;
 nu_arr(1,1) = 0; % deg
 mu_arr(1,1) = 90; % deg
 
-y(1,1) = 0;
+y_arr(1,1) = 0;
+x_arr(1,1) = xThroatCircle(2,1) + ( y_arr(1,1) - yThroatCircle(2,1)  ) / tand((deltaThroatCircle(2,1) - muThroatCircle(2,1) - muThroatCircle(2,1))/2) ; 
+x(1,1) = xarc(2,1) + (y(1,1) - yarc(2,1))/tand((ThetaArc(2,1) - MuArc(2,1) - MuArc(2,1))/2);
+
+% Calculates the nodes on the first left (up) characteristic line "C+"
