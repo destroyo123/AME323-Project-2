@@ -147,6 +147,7 @@ L_arr = zeros(N,N); % Left-running characteristics at nodes (invariants)
 R_arr = zeros(N,N); % Right-running characteristics at nodes (invariants)
 M_arr = zeros(N,N); % Mach at nodes
 delta_arr = zeros(N,N); % Flow Angles at nodes (deg)
+nu_arr = zeros(N,N); % Prandtl-Meyer 'nu' at nodes (deg)
 mu_arr = zeros(N,N); % Mach angles at nodes (deg)
 x_arr = zeros(N,N); % x values of nodes (m)
 y_arr = zeros(N,N); % y values of nodes (m)
@@ -175,4 +176,16 @@ arcpoints = @(delta) deal( h_t .* sind(delta), h_t.*(2-cosd(delta)));
 [xThroatCircle, yThroatCircle] = arcpoints(deltaThroatCircle);
 
 % At the wall points along this arc:
-% 
+R_arr(:,1) = RThroatCircle(2:length(RThroatCircle),1);
+delta_arr(:,1) = deltaThroatCircle(2:length(RThroatCircle),1);
+nu_arr(:,1) = delta_arr(:,1);
+L_arr(:,1) = delta_arr(:,1) - nu_arr(:,1);
+
+% Throat can't be calculated exactly at M=1 or it breaks, so we give it a
+% slight increase by 'eps'
+eps = 1e-4;
+M_arr(1,1) = 1+eps;
+nu_arr(1,1) = 0; % deg
+mu_arr(1,1) = 90; % deg
+
+y(1,1) = 0;
