@@ -174,3 +174,5 @@ arcpoints = @(delta) deal( h_t .* sind(delta), h_t.*(2-cosd(delta)));
 % Actually computes the coords of the circular part of the nozzle expanding.
 [xThroatCircle, yThroatCircle] = arcpoints(deltaThroatCircle);
 
+% At the wall points along this arc:
+% 
