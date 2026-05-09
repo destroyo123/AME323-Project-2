@@ -52,9 +52,10 @@ Tl = Tl_air; % Temperature our fluid (air) liquifies at
 M_e = 6; % Exit mach
 M_t = 1; % Throat
 
-N_waves = 40; %Number of waves
+N = 40; %Number of waves
 
-h_n = 350; %Nozzle height in mm
+% h_n is given as the full diameter...
+h_n = 350/2; %Nozzle height in mm
 h_n = h_n/1000; % Converted to m
 
 
@@ -139,3 +140,21 @@ nu_t = nu(M_t, gamma); % Degrees
 
 % Max flow angle anywhere in the nozzle
 delta_max = nu_e / 2; % degrees
+
+% Use that to determine the initial waves, since we know each of the
+% initial waves lies on the circular curve as the throat opens up to the
+% max angle.
+
+% Each wave is on the circular arc, spaced by THIS angle as the throat
+% opens.
+ddelta = delta_max/N;
+
+% Instantiate arrays for the nodes
+L_arr = zeros(N,N); % Left-running characteristics at nodes (invariants)
+R_arr = zeros(N,N); % Right-running characteristics at nodes (invariants)
+M_arr = zeros(N,N); % Mach at nodes
+delta_arr = zeros(N,N); % Flow Angles at nodes (deg)
+mu_arr = zeros(N,N); % Mach angles at nodes (deg)
+x_arr = zeros(N,N); % x values of nodes (m)
+y_arr = zeros(N,N); % y values of nodes (m)
+
