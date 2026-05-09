@@ -1,0 +1,314 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{hyperref}
+
+\title{Method of Characteristics Nozzle Design:\\A Complete Walkthrough}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{The Big Picture (ELI5 Version)}
+
+Imagine you're at the throat of the nozzle. The flow is barely supersonic ($M \approx 1 + \varepsilon$). As air flows along the curved wall near the throat, the wall ``turns away'' from the flow, creating expansion waves. These waves bounce around inside the nozzle. Your job is to:
+
+\begin{enumerate}
+    \item Figure out where those waves go (using characteristic lines).
+    \item Figure out the flow properties at every intersection point.
+    \item Use those wave intersections with the upper wall to define the nozzle contour.
+\end{enumerate}
+
+Your project specifies a Mach 6 exit, a 2D planar nozzle with a circular-arc throat whose radius of curvature equals the throat half-height, and explicitly states \textbf{not} to compute a minimum-length nozzle with sharp corners~[1].
+
+\section{Fundamental Concepts}
+
+\subsection{What Are Characteristics?}
+
+In supersonic flow, information travels along specific lines called \textbf{characteristics} (or Mach lines). There are two families:
+
+\begin{itemize}
+    \item \textbf{$C^-$ characteristics} (right-running): lines that slope at angle $(\theta - \mu)$ from horizontal.
+    \item \textbf{$C^+$ characteristics} (left-running): lines that slope at angle $(\theta + \mu)$ from horizontal.
+\end{itemize}
+
+where:
+\begin{itemize}
+    \item $\theta$ = local flow angle (measured from horizontal). (Your ``$\delta
+```'.)
+    \item $\mu$ = Mach angle $= \arcsin(1/M)$.
+\end{itemize}
+
+\subsection{What Are the Riemann Invariants?}
+
+Along each characteristic family, a specific combination of flow angle and Prandtl--Meyer function is \textbf{constant}:
+
+\begin{align}
+    \text{Along } C^-: \quad K^- &= \theta + \nu = \text{constant} \\
+    \text{Along } C^+: \quad K^+ &= \theta - \nu = \text{constant}
+\end{align}
+
+These are your Riemann invariants. If you know $K^-$ and $K^+$ at a point, you know everything about the flow there:
+\begin{align}
+    \theta &= \frac{K^- + K^+}{2} \\
+    \nu &= \frac{K^- - K^+}{2}
+\end{align}
+
+From $\nu$, you get $M$ (by inverting the Prandtl--Meyer function), and from $M$ you get $\mu$, $p/p_0$, $T/T_0$, etc.
+
+\section{Your Specific Setup}
+
+From the project document~[1]:
+\begin{itemize}
+    \item Exit Mach number: $M_e = 6$
+    \item Nozzle type: 2D planar (rectangular cross-section, no axisymmetric correction)
+    \item Throat shape: circular arc with radius of curvature $= h^*$ (throat half-height)
+    \item \textbf{Not} a minimum-length nozzle (no sharp corner at throat)
+    \item Exit half-height: $h_n = 175$~mm (half of 350~mm)
+\end{itemize}
+
+The expansion through the throat region is approximated with $N$ equally-spaced Prandtl--Meyer waves, and you cannot start exactly at the throat since $\mu = 90^\circ$ at $M=1$~[1].
+
+\subsection{Known Quantities}
+\begin{itemize}
+    \item $\nu_e$ = Prandtl--Meyer function evaluated at $M_e = 6$
+    \item $\theta_{\max} = \nu_e / 2$ (maximum wall turning angle, at the inflection point)
+    \item $h^*$ and $h_e$ related by the isentropic area ratio $A_e/A^* = h_e/h^*$
+\end{itemize}
+
+\section{Sign and Geometry Conventions}
+
+Consider the \textbf{upper wall} of the nozzle (symmetric about the horizontal centerline).
+
+\begin{itemize}
+    \item The $x$-axis is horizontal (flow direction).
+    \item The $y$-axis is vertical (upward positive).
+    \item $\theta > 0$ means the flow is angled upward.
+    \item At the upper wall (curving away upward), $\theta > 0$.
+\end{itemize}
+
+\textbf{Characteristic slopes in physical space:}
+\begin{align}
+    C^+ \text{ slope:} \quad \frac{dy}{dx} &= \tan(\theta + \mu) \quad \text{(left-running, goes upward)} \\
+    C^- \text{ slope:} \quad \frac{dy}{dx} &= \tan(\theta - \mu) \quad \text{(right-running, goes downward)}
+\end{align}
+
+From the upper wall, a $C^-$ characteristic goes \emph{downward} toward the centerline (since $\mu > \theta$ for low supersonic Mach, the slope $\tan(\theta - \mu)$ is negative). This makes physical sense: waves from the upper wall propagate downward into the flow.
+
+\section{Complete Step-by-Step Procedure}
+
+\subsection{Step 1: Initial Points on the Throat Wall}
+
+Your $N$ expansion waves emanate from the upper wall of the circular-arc throat. Each wave is a $C^-$ characteristic going from the wall toward the centerline.
+
+The wall angles are equally spaced:
+\begin{equation}
+    \Delta\theta = \frac{\theta_{\max}}{N} = \frac{\nu_e}{2N}
+\end{equation}
+
+At the $i$-th point on the throat wall ($i = 1, 2, \ldots, N$):
+\begin{equation}
+    \theta_i = i \cdot \Delta\theta
+\end{equation}
+
+\subsubsection{Why $\nu_i = \theta_i$ in the Initial Simple-Wave Region}
+
+In the expansion region right after the throat, this is a \textbf{simple-wave region}. The $C^+$ characteristics passing through this region originate from near the sonic line (centerline region where $M \approx 1$). At the sonic line, $\nu = 0$ and $\theta = 0$, so:
+\begin{equation}
+    K^+ = \theta - \nu = 0 - 0 = 0
+\end{equation}
+
+Since $K^+ = 0$ everywhere in the simple-wave region, at every point:
+\begin{equation}
+    \theta - \nu = 0 \quad \Longrightarrow \quad \boxed{\nu = \theta}
+\end{equation}
+
+Therefore, at wall point $i$:
+\begin{align}
+    \theta_i &= i\,\Delta\theta \\
+    \nu_i &= i\,\Delta\theta \\
+    K^-_i &= \theta_i + \nu_i = 2i\,\Delta\theta \\
+    K^+_i &= 0
+\end{align}
+
+From $\nu_i$, compute $M_i$ (invert the Prandtl--Meyer function), then $\mu_i = \arcsin(1/M_i)$.
+
+\subsection{Step 2: Physical Locations of Initial Wall Points}
+
+The throat arc has radius $R_{\mathrm{arc}} = h^*$. Place the origin at the centerline at the throat. The arc center for the upper wall is at $(0,\; h^* + R_{\mathrm{arc}}) = (0,\; 2h^*)$.
+
+At angular position $\alpha$ measured from the downward vertical (so $\alpha = 0$ is the throat minimum and the wall angle equals $\alpha$):
+\begin{align}
+    x_{\mathrm{wall}} &= h^* \sin(\alpha) \\
+    y_{\mathrm{wall}} &= h^*(2 - \cos\alpha)
+\end{align}
+
+For starting point $i$ with wall angle $\theta_i = i\,\Delta\theta$, set $\alpha = \theta_i$:
+\begin{align}
+    x_i &= h^* \sin(i\,\Delta\theta) \\
+    y_i &= h^*(2 - \cos(i\,\Delta\theta))
+\end{align}
+
+\subsection{Step 3: Reflections off the Centerline (Symmetry Line)}
+
+When a $C^-$ characteristic hits the centerline, it ``reflects'' as a $C^+$ characteristic. By symmetry, $\theta = 0$ on the centerline.
+
+When $C^-$ char \#$i$ (carrying $K^-_i = 2i\,\Delta\theta$) reaches the centerline:
+\begin{align}
+    K^-_i &= \theta + \nu = 0 + \nu \quad \Longrightarrow \quad \nu = 2i\,\Delta\theta \\
+    K^+_{\mathrm{reflected}} &= \theta - \nu = 0 - 2i\,\Delta\theta = -2i\,\Delta\theta
+\end{align}
+
+So the reflected $C^+$ characteristic carries $K^+ = -2i\,\Delta\theta$.
+
+\subsection{Step 4: Interior Points (Intersections of $C^-$ and $C^+$ Characteristics)}
+
+When a $C^-$ carrying $K^-_a$ and a $C^+$ carrying $K^+_b$ intersect at point $P$:
+\begin{align}
+    \theta_P &= \frac{K^-_a + K^+_b}{2} \\[6pt]
+    \nu_P &= \frac{K^-_a - K^+_b}{2}
+\end{align}
+
+From $\nu_P$: compute $M_P$ (invert Prandtl--Meyer). Then $\mu_P = \arcsin(1/M_P)$.
+
+\subsection{Step 5: Physical Location of Interior Points}
+
+Suppose point $P$ is the intersection of:
+\begin{itemize}
+    \item A $C^-$ characteristic coming from point $A$ at $(x_A, y_A)$
+    \item A $C^+$ characteristic coming from point $B$ at $(x_B, y_B)$
+\end{itemize}
+
+You already know $\theta$ and $\mu$ at all three points ($A$, $B$, and $P$). Use \textbf{average slopes}:
+\begin{align}
+    \text{Slope of } C^- \text{ from } A \text{ to } P: \quad m^- &= \tan\!\left(\frac{\theta_A + \theta_P}{2} - \frac{\mu_A + \mu_P}{2}\right) \\[6pt]
+    \text{Slope of } C^+ \text{ from } B \text{ to } P: \quad m^+ &= \tan\!\left(\frac{\theta_B + \theta_P}{2} + \frac{\mu_B + \mu_P}{2}\right)
+\end{align}
+
+Now solve two simultaneous linear equations:
+\begin{align}
+    y_P - y_A &= m^-(x_P - x_A) \\
+    y_P - y_B &= m^+(x_P - x_B)
+\end{align}
+
+Solving for $x_P$:
+\begin{equation}
+    x_P = \frac{(y_B - y_A) + m^- x_A - m^+ x_B}{m^- - m^+}
+\end{equation}
+Then:
+\begin{equation}
+    y_P = y_A + m^-(x_P - x_A)
+\end{equation}
+
+\subsection{Step 6: Wall Points in the Straightening Section}
+
+After the inflection point (where $\theta = \theta_{\max}$), the wall must straighten to cancel all remaining waves. When a $C^+$ characteristic arrives at the upper wall, it is \textbf{absorbed} (no reflection).
+
+\subsubsection{The No-Reflection Condition}
+
+For uniform exit flow, we need $\theta = 0$ and $\nu = \nu_e$ at the exit. This means the $C^-$ invariant throughout the straightening section's wall must be:
+\begin{equation}
+    \boxed{K^-_{\mathrm{wall}} = \nu_e \quad \text{(constant for all wall points in the straightening section)}}
+\end{equation}
+
+\textbf{Why?} If the exit flow is uniform with $\theta = 0$ and $\nu = \nu_e$, then $K^- = 0 + \nu_e = \nu_e$ everywhere in the uniform region. Since $K^-$ is constant along $C^-$ characteristics, any $C^-$ characteristic \emph{leaving} the straightening-section wall must carry $K^- = \nu_e$. This means no new expansion is generated at the wall.
+
+\subsubsection{Computing Wall Point Properties}
+
+At wall point $j$ in the straightening section, a $C^+$ characteristic arrives carrying $K^+_j$ (known from the interior computation). Then:
+\begin{align}
+    \theta_{\mathrm{wall},j} &= \frac{K^-_{\mathrm{wall}} + K^+_j}{2} = \frac{\nu_e + K^+_j}{2} \\[6pt]
+    \nu_{\mathrm{wall},j} &= \frac{K^-_{\mathrm{wall}} - K^+_j}{2} = \frac{\nu_e - K^+_j}{2}
+\end{align}
+
+Since $K^+_j < 0$ (from Step 3), $\theta_{\mathrm{wall},j}$ is positive but \textbf{less than} $\theta_{\max}$, and it \textbf{decreases} toward zero as you move downstream. The wall straightens out.
+
+\subsubsection{Finding the Physical Location of Wall Points}
+
+You know:
+\begin{itemize}
+    \item The previous wall point at $(x_{\mathrm{prev}}, y_{\mathrm{prev}})$ with angle $\theta_{\mathrm{prev}}$
+    \item The interior point $(x_{\mathrm{int}}, y_{\mathrm{int}})$ from which the $C^+$ arrives
+\end{itemize}
+
+Wall segment slope (average):
+\begin{equation}
+    m_{\mathrm{wall}} = \tan\!\left(\frac{\theta_{\mathrm{prev}} + \theta_{\mathrm{wall},j}}{2}\right)
+\end{equation}
+
+$C^+$ characteristic slope:
+\begin{equation}
+    m^+ = \tan\!\left(\frac{\theta_{\mathrm{int}} + \theta_{\mathrm{wall},j}}{2} + \frac{\mu_{\mathrm{int}} + \mu_{\mathrm{wall},j}}{2}\right)
+\end{equation}
+
+Intersect these two lines:
+\begin{align}
+    y - y_{\mathrm{prev}} &= m_{\mathrm{wall}}(x - x_{\mathrm{prev}}) \\
+    y - y_{\mathrm{int}} &= m^+(x - x_{\mathrm{int}})
+\end{align}
+
+Solve for $(x_{\mathrm{wall},j},\; y_{\mathrm{wall},j})$.
+
+\section{Summary of the Algorithm}
+
+\subsection{Phase 1: Setup}
+\begin{enumerate}
+    \item Compute $\nu_e$ from $M_e = 6$ using the Prandtl--Meyer function.
+    \item $\theta_{\max} = \nu_e / 2$.
+    \item $\Delta\theta = \theta_{\max} / N$.
+    \item At each wall source point $i$ ($i = 1, \ldots, N$): $\theta_i = i\,\Delta\theta$, $\nu_i = i\,\Delta\theta$, $K^-_i = 2i\,\Delta\theta$, $K^+ = 0$.
+    \item Compute $M_i$ and $\mu_i$ at each point from $\nu_i$.
+    \item Compute $(x_i, y_i)$ on the circular arc.
+\end{enumerate}
+
+\subsection{Phase 2: March to Centerline (First Column)}
+\begin{enumerate}
+    \item The first $C^-$ characteristic (from wall point 1) travels to the centerline.
+    \item At the centerline: $\theta = 0$, $\nu = K^-_1 = 2\Delta\theta$.
+    \item Physically locate this point by intersecting the $C^-$ line with $y = 0$.
+\end{enumerate}
+
+\subsection{Phase 3: Interior Grid (Non-Simple Region)}
+\begin{enumerate}
+    \item Systematically compute all intersection points.
+    \item At each point, use $K^-$ and $K^+$ from the two crossing characteristics.
+    \item Compute $\theta$, $\nu$, $M$, $\mu$, and $(x, y)$.
+\end{enumerate}
+
+\subsection{Phase 4: Wall Contour (Straightening Section)}
+\begin{enumerate}
+    \item When $C^+$ characteristics reach the upper wall, apply $K^- = \nu_e$.
+    \item Compute $\theta_{\mathrm{wall}}$ and $\nu_{\mathrm{wall}}$.
+    \item Find $(x, y)$ by intersecting the $C^+$ line with the wall line from the previous point.
+\end{enumerate}
+
+\subsection{Phase 5: Verification}
+At the exit plane, all points should have $\theta = 0$ and $\nu = \nu_e$ (uniform $M = 6$ flow, horizontal).
+
+\section{Key Equations Reference}
+
+\textbf{Prandtl--Meyer function} (for $\gamma = 1.4$):
+\begin{equation}
+    \nu(M) = \sqrt{6}\,\arctan\!\left(\sqrt{\frac{M^2 - 1}{6}}\right) - \arctan\!\left(\sqrt{M^2 - 1}\right)
+\end{equation}
+
+\textbf{General form:}
+\begin{equation}
+    \nu(M) = \sqrt{\frac{\gamma+1}{\gamma-1}}\,\arctan\!\left(\sqrt{\frac{(\gamma-1)(M^2-1)}{\gamma+1}}\right) - \arctan\!\left(\sqrt{M^2-1}\right)
+\end{equation}
+
+\textbf{Mach angle:}
+\begin{equation}
+    \mu = \arcsin\!\left(\frac{1}{M}\right)
+\end{equation}
+
+\textbf{Isentropic area ratio:}
+\begin{equation}
+    \frac{A}{A^*} = \frac{h}{h^*} = \frac{1}{M}\left(\frac{2}{\gamma+1}\left(1 + \frac{\gamma-1}{2}M^2\right)\right)^{\!\frac{\gamma+1}{2(\gamma-1)}}
+\end{equation}
+
+\end{document}
