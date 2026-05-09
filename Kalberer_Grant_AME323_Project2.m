@@ -215,3 +215,13 @@ y_arr(1,1) = 0;
 x_arr(1,1) = xThroatCircle(2,1) + ( y_arr(1,1) - yThroatCircle(2,1)  ) / tand((deltaThroatCircle(2,1) - muThroatCircle(2,1) - muThroatCircle(2,1))/2) ; 
 
 % Calculates the nodes on the first left (up) characteristic line "C+"
+% First column.
+% On the centerline, θ=0, ν=R_1 = 2*ddelta
+% Then find the point where the downward characteristic line (slope depends on mach angle mu)
+% intersects with y=0.
+for i = 2:N
+    M_arr(i,1) = meyerMach(nu_arr(i,1), gamma);
+    mu_arr(i,1) = muFromNu(nu_arr(i,1));
+
+
+end
