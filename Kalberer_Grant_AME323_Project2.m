@@ -49,12 +49,9 @@ Tl = Tl_air; % Temperature our fluid (air) liquifies at
 
 % Parameters
 
-<<<<<<< Updated upstream
 M_e = 6; % Exit mach
 M_t = 1; % Throat
-=======
 
->>>>>>> Stashed changes
 N_waves = 40; %Number of waves
 
 h_n = 350; %Nozzle height in mm
@@ -107,7 +104,6 @@ function mach = meyerMach(gamma, nu)
     mach = flowprandtlmeyer(gamma, nu, 'nu');
 end
 
-<<<<<<< Updated upstream
 %%
 % Post-Intersection nu
 % 
@@ -143,5 +139,3 @@ nu_t = nu(M_t, gamma); % Degrees
 
 % Max flow angle anywhere in the nozzle
 delta_max = nu_e / 2; % degrees
-=======
->>>>>>> Stashed changes
