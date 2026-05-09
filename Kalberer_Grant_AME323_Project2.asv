@@ -40,6 +40,7 @@ gamma_helium = 1.67;
 
 gamma = gamma_air; % since we're using air
 
+<<<<<<< Updated upstream
 % Liquid temperatures
 Tl_helium = 2.2; % Kelvin
 Tl_air = 50; % Kelvin
@@ -56,13 +57,28 @@ h_n = 350; %Nozzle height in mm
 h_n = h_n/1000; % Converted to m
 
 
+=======
+
+
+%% Setting up the arrays and variables
+% todo: list what we put in here
+
+
+N_waves = 40; %Number of waves
+h_n = 350; %Nozzle height in mm
+h_n = h_n/1000; % Converted to m
+
+>>>>>>> Stashed changes
 %% Functions
 % Equations and Relations I mostly made for other homeworks & discussion
 % problems. Equations come from NACA1135 unless otherwise stated.
 
+<<<<<<< Updated upstream
 % Area ratio equation
 AeAt = @(M) (1/M) * (2/(gamma+1) * (1 + (((gamma-1)/2) * M^2 )))^( (gamma+1)/(2*(gamma-1)) );
 
+=======
+>>>>>>> Stashed changes
 %%
 % *Prandtl-Meyer angle 'nu'*
 % 
@@ -102,6 +118,7 @@ function mach = meyerMach(gamma, nu)
     mach = flowprandtlmeyer(gamma, nu, 'nu');
 end
 
+<<<<<<< Updated upstream
 %%
 % Post-Intersection nu
 % 
@@ -136,3 +153,5 @@ nu_e = nu(M_,); % degrees
 
 % Max flow angle anywhere in the nozzle
 delta_max = nu_e / 2; % degrees
+=======
+>>>>>>> Stashed changes
