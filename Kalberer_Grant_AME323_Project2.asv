@@ -149,10 +149,24 @@ delta_max = nu_e / 2; % degrees
 % opens.
 ddelta = delta_max/N;
 
-% Instantiate some arrays to start listing those waves:
+% Instantiate arrays for the nodes
+L_arr = zeros(N,N); % Left-running characteristics at nodes (invariants)
+R_arr = zeros(N,N); % Right-running characteristics at nodes (invariants)
+M_arr = zeros(N,N); % Mach at nodes
+delta_arr = zeros(N,N); % Flow Angles at nodes (deg)
+mu_arr = zeros(N,N); % Mach angles at nodes (deg)
+x_arr = zeros(N,N); % x values of nodes (m)
+y_arr = zeros(N,N); % y values of nodes (m)
 
-L_arr = zeros(N,N);
-R_arr = zeros(N,N);
-M_arr = zeros(N,N); % Mach nod
-delta_arr = zeros(N,N); % Flow Angle nodes (deg)
-mu_arr = zeros(N,N);
+% Circular throat curve from horizontal to delta_max (degrees)
+deltaThroatCircle(:, 1) = (0:ddelta:delta_max);
+
+% Instantiate the 'nu' array with the same angle values
+nuThroatCircle = deltaThroatCircle;
+
+% Right-running (expansion waves that go down) characteristics from the
+% throat (degrees)
+RThroatCircle = deltaThroatCircle + nuThroatCircle;
+
+% Define an anonymous function to calculate the points
+% of the circular-throat-opening from δ=0 to δ=δ_max

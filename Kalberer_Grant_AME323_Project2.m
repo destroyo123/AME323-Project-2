@@ -52,7 +52,7 @@ Tl = Tl_air; % Temperature our fluid (air) liquifies at
 M_e = 6; % Exit mach
 M_t = 1; % Throat
 
-N = 40; %Number of waves
+N = 4; %Number of waves
 
 % h_n is given as the full diameter...
 h_n = 350/2; %Nozzle height in mm
@@ -158,3 +158,22 @@ mu_arr = zeros(N,N); % Mach angles at nodes (deg)
 x_arr = zeros(N,N); % x values of nodes (m)
 y_arr = zeros(N,N); % y values of nodes (m)
 
+% Circular throat curve from horizontal to delta_max (degrees)
+deltaThroatCircle(:, 1) = (0:ddelta:delta_max);
+
+% Instantiate the 'nu' array with the same angle values
+nuThroatCircle = deltaThroatCircle;
+
+% Right-running (expansion waves that go down) characteristics from the
+% throat (degrees)
+RThroatCircle = deltaThroatCircle + nuThroatCircle;
+
+% Define an anonymous function to calculate the points
+% of the circular-throat-opening from δ=0 to δ=δ_max
+
+% Outputs: x, y in meters. Can take array or individual delta values.
+% x,y coords along the circular throat opening to δ_max.
+arcpoints = @(delta) deal( h_t .* sind(delta), h_t.*(2-cosd(delta)));
+% CHECKED AGAINST DESMOS: https://www.desmos.com/calculator/x4hd9teecj
+
+[xThroatCircle, yThroatCircle] = arcpoints(deltaThroatCircle);
