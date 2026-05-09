@@ -163,7 +163,10 @@ deltaThroatCircle(:, 1) = (0:ddelta:delta_max);
 nuThroatCircle = deltaThroatCircle;
 
 % And calcualte the mach angles upon which the characteristics go:
-muThroatCircle = nu(:,1);
+% first it needs to make mu a function of nu:
+muFromNu = @(nu) asind(1/meyerMach(nu));
+
+muThroatCircle = muFromNu(nuThroatCircle);
 
 % Right-running (expansion waves that go down) characteristics from the
 % throat (degrees)
