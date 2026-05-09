@@ -155,8 +155,8 @@ delta_max = nu_e / 2; % degrees
 ddelta = delta_max/N;
 
 % Instantiate arrays for the nodes
-L_arr = zeros(N,N); % Left-running characteristics at nodes (invariants)
-R_arr = zeros(N,N); % Right-running characteristics at nodes (invariants)
+Kp_arr = zeros(N,N); % Left-running characteristics at nodes (invariants)
+Km_arr = zeros(N,N); % Right-running characteristics at nodes (invariants)
 M_arr = zeros(N,N); % Mach at nodes
 delta_arr = zeros(N,N); % Flow Angles at nodes (deg)
 nu_arr = zeros(N,N); % Prandtl-Meyer 'nu' at nodes (deg)
@@ -172,17 +172,24 @@ y_arr = zeros(N,N); % y values of nodes (m)
 deltaThroatCircle(:, 1) = (0:ddelta:delta_max);
 
 % Instantiate the 'nu' array with the same angle values
+% True by definition of 'nu' since we start at M=1, so nu = delta on the
+% throat expansion fan.
 nuThroatCircle = deltaThroatCircle;
 
 % And calcualte the mach angles upon which the characteristics go:
 % first it needs to make mu a function of nu:
-muFromNu = @(nu) asind(1/meyerMach(nu,gamma));
+muFromNu = @(nu) asind(1./meyerMach(nu,gamma));
 
+% Then calculate it.
+% Remember it's useful because this determines angles of characteristic lines.
+% mu = arcsin(1/M), and  dy/dx = tan(delta +/- mu)
 muThroatCircle(:,1) = muFromNu(nuThroatCircle);
 
 % Right-running (expansion waves that go down) characteristics from the
 % throat (degrees)
-RThroatCircle = deltaThroatCircle + nuThroatCircle;
+% Definition of R: nu - delta = 0 for this initial expansion fan
+KpThroatCircle = deltaThroatCircle + nuThroatCircle;
+KmThroatCircle = nuThroatCircle - deltaThroatCircle; % should be zero
 
 % Define an anonymous function to calculate the points
 % of the circular-throat-opening from δ=0 to δ=δ_max
@@ -195,31 +202,53 @@ arcpoints = @(delta) deal( h_t .* sind(delta), h_t.*(2-cosd(delta)));
 % Actually computes the coords of the circular part of the nozzle expanding.
 [xThroatCircle, yThroatCircle] = arcpoints(deltaThroatCircle);
 
-% At the wall points along this arc:
-R_arr(:,1) = RThroatCircle(2:length(RThroatCircle),1);
-delta_arr(:,1) = deltaThroatCircle(2:length(RThroatCircle),1);
-nu_arr(:,1) = delta_arr(:,1);
-L_arr(:,1) = delta_arr(:,1) - nu_arr(:,1);
+% Source points of the initial characteristic lines (waves)
+theta0 = deltaThroatCircle(2:end);
+nu0 = theta0;
+
+Kp0 = nu0 + theta0;
+Km0 = nu0 - theta0;
+
+x0 = xThroatCircle(2:end);
+y0 = yThroatCircle(2:end);
+
+mu0 = muThroatCircle(2:end);
 
 %% Calculating Centerline Reflections (Task 1)
 % The first big step to getting the nozzle geometry.
 
-% Throat can't be calculated exactly at M=1 or it breaks, so we give it a
-% slight increase by 'eps'
-eps = 1e-4;
-M_arr(1,1) = 1+eps;
-nu_arr(1,1) = 0; % deg
-mu_arr(1,1) = 90; % deg
+% For each initial throat wave 'i'
+for i = 1:N
+    % ----- THEORY -----
+    % At centerline:
+    % delta = 0
+    % Kp is constant from source (derived in prior section)
+    % So:
+    %   nu = Kp
+    %   Km = nu
+    % Compute: M, mu
+    % Compute slope
+    % Intersect with y=0 (x-coordinate of first wave reflections)
 
-y_arr(1,1) = 0;
-x_arr(1,1) = xThroatCircle(2,1) + ( y_arr(1,1) - yThroatCircle(2,1)  ) / tand((deltaThroatCircle(2,1) - muThroatCircle(2,1) - muThroatCircle(2,1))/2) ; 
+    % Flow angle at centerline must zero by symmetric waves cancelling
+    delta_arr(i,1) = 0;
 
-% Calculates the nodes on the first left (up) characteristic line "C+"
-% First column.
-% On the centerline, τ
-for i = 2:N
+    % K+ was already calculated and stays the same
+    Kp_arr(i,1) = Kp0(i); % From earlier array.
+    
+    % Then do the math: nu = (K+  + K- ) / 2
+    % Where at centerline delta = 0
+    % So K+  =  K-  = nu (reflection)
+    nu_arr(i,1) = Kp_arr(i,1); % nu = K+
+    Km_arr(i,1) = nu_arr(i,1); % K- = K+ = nu
+
+    % Find Mach of the centerline given by 'nu'
     M_arr(i,1) = meyerMach(nu_arr(i,1), gamma);
+
+    % Use that mach to find the mach angle
     mu_arr(i,1) = muFromNu(nu_arr(i,1));
 
-
+    % Now we actually find the intersection since we know delta and mu
+    % so we can find the slope using those:
+    slope = tand( (0.5)*( theta0(i) - mu0(i) ))
 end
