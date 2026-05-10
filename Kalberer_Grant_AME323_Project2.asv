@@ -32,7 +32,7 @@ leaf = [112, 184, 101] ./255;
 river = [0, 125, 132] ./255;
 mesa = [169, 92, 66] ./255;
 
-gray = [0.8, 0.9, 0.9];
+gray = [0, 0, 0];
 % Set interpereter to Latex. Lets us use subscripts and greek characters.
 set(groot, 'defaultTextInterpreter', 'latex');
 set(groot, 'defaultAxesTickLabelInterpreter', 'latex');
@@ -71,7 +71,7 @@ Tl = Tl_air; % Temperature our fluid (air) liquifies at
 M_e = 6; % Exit mach
 M_t = 1; % Throat
 
-N = 10; %Number of waves
+N = 30; %Number of waves
 
 % h_n is given as the full diameter...
 h_n = 350/2; %Nozzle height in mm
@@ -208,8 +208,8 @@ arcpoints = @(delta) deal( h_t .* sind(delta), h_t.*(2-cosd(delta)));
 [xThroatCircle, yThroatCircle] = arcpoints(deltaThroatCircle);
 
 % Source points of the initial characteristic lines (waves)
-nu0 = deltaThroatCircle(2:end);
-theta0 = zeros(size(nu0));  % FIXED HIGH-MACH DIVERGENCE: start from sonic flow direction
+theta0 = deltaThroatCircle(2:end);  % flow angle at each source point
+nu0 = theta0;                        % nu = delta on the initial fan (K- = 0)
 
 % Originally was this but needed to delete due to high-mach divergence.
 %theta0 = deltaThroatCircle(2:end);
@@ -422,17 +422,20 @@ for i = 1:N
     % Slope of C+ characteristic: dy/dx = tan(theta - mu) for a left-running
     % wave going DOWN toward centerline
     % The C+ characteristic slope heading toward centerline:
-    slope_down = tand(theta0(i) - mu0(i));
-    
-    % If slope is positive or zero, use the other branch
+    % Use AVERAGED slope between source and centerline for the C+ path.
+    % At source: slope = tan(theta0 - mu0)
+    % At centerline: slope = tan(0 - mu_center) = -tan(mu_center)
+    % The average guarantees a negative slope even when theta0 > mu0.
+    slope_source = tand(theta0(i) - mu0(i));
+    slope_centerline = -tand(mu_center(i));
+    slope_down = 0.5*(slope_source + slope_centerline);
+
+    % Must be negative to reach y=0 from positive y
     if slope_down >= 0
-        slope_down = tand(theta0(i) + mu0(i));
-        % Flip sign for going down
-        slope_down = -abs(slope_down);
+        slope_down = slope_centerline;  % fallback: always negative
     end
     
     % Intersection with y = 0:
-    % y0(i) + slope_down * (x_c - x0(i)) = 0
     x_center(i) = x0(i) + (-y0(i) / slope_down);
     y_center(i) = 0;
 end
@@ -686,26 +689,48 @@ for j = 2:N       % C+ wave index (from throat)
         % C+ characteristic (left-running): slope = tan(delta - mu)  [goes up-right from centerline]
         % C- characteristic (right-running): slope = tan(delta + mu) [goes up-right from centerline]
         
-        % Average the slopes (predictor-corrector style):
-        % For C+ from A:
-        slope_Cplus_A = tand(delta_A - mu_A);
-        slope_Cplus_node = tand(delta_trans(i,j) - mu_trans(i,j));
-        slope_Cplus = 0.5*(slope_Cplus_A + slope_Cplus_node);
+        % ---- Predictor-Corrector iteration for geometry ----
+        % Step 1: PREDICT using departure-point slopes only
+        slope_Cp = tand(delta_A - mu_A);
+        slope_Cm = tand(delta_B + mu_B);
         
-        % For C- from B:
-        slope_Cminus_B = tand(delta_B + mu_B);
-        slope_Cminus_node = tand(delta_trans(i,j) + mu_trans(i,j));
-        slope_Cminus = 0.5*(slope_Cminus_B + slope_Cminus_node);
-        
-        % Solve intersection:
-        % yA + slope_Cplus*(x - xA) = yB + slope_Cminus*(x - xB)
-        if abs(slope_Cplus - slope_Cminus) < 1e-12
-            % Parallel lines - shouldn't happen but safeguard
+        % Initial intersection (predictor)
+        denom = slope_Cp - slope_Cm;
+        if abs(denom) < 1e-12
             x_trans(i,j) = 0.5*(xA + xB);
             y_trans(i,j) = 0.5*(yA + yB);
         else
-            x_trans(i,j) = (yB - yA + slope_Cplus*xA - slope_Cminus*xB) / (slope_Cplus - slope_Cminus);
-            y_trans(i,j) = yA + slope_Cplus*(x_trans(i,j) - xA);
+            x_trans(i,j) = (yB - yA + slope_Cp*xA - slope_Cm*xB) / denom;
+            y_trans(i,j) = yA + slope_Cp*(x_trans(i,j) - xA);
+        end
+        
+        % Step 2: CORRECT using average of departure and arrival slopes
+        % (node properties are already known from compatibility)
+        slope_Cp_node = tand(delta_trans(i,j) - mu_trans(i,j));
+        slope_Cm_node = tand(delta_trans(i,j) + mu_trans(i,j));
+        
+        slope_Cp = 0.5*(tand(delta_A - mu_A) + slope_Cp_node);
+        slope_Cm = 0.5*(tand(delta_B + mu_B) + slope_Cm_node);
+        
+        denom = slope_Cp - slope_Cm;
+        if abs(denom) < 1e-12
+            x_trans(i,j) = 0.5*(xA + xB);
+            y_trans(i,j) = 0.5*(yA + yB);
+        else
+            x_trans(i,j) = (yB - yA + slope_Cp*xA - slope_Cm*xB) / denom;
+            y_trans(i,j) = yA + slope_Cp*(x_trans(i,j) - xA);
+        end
+        
+        % Step 3: Validate — node must be above centerline and downstream
+        if y_trans(i,j) < 0
+            % If negative y, use predictor-only result (departure slopes)
+            slope_Cp = tand(delta_A - mu_A);
+            slope_Cm = tand(delta_B + mu_B);
+            denom = slope_Cp - slope_Cm;
+            if abs(denom) > 1e-12
+                x_trans(i,j) = (yB - yA + slope_Cp*xA - slope_Cm*xB) / denom;
+                y_trans(i,j) = yA + slope_Cp*(x_trans(i,j) - xA);
+            end
         end
         
         % Store for plotting
@@ -1236,6 +1261,7 @@ end
 for i = 1:N-1
     for j = i+1:N-1
         if isnan(x_trans(i,j)) || isnan(x_trans(i,j+1)); continue; end
+        if y_trans(i,j) < 0 || y_trans(i,j+1) < 0; continue; end
         
         % Top edge of quad: trans(i,j) and trans(i,j+1)
         xTL = x_trans(i,j);   yTL = y_trans(i,j);   MTL = M_trans(i,j);
@@ -1265,10 +1291,9 @@ for i = 1:N-1
 end
 
 % ---- C) Left-edge triangles of transition region ----
-% These are the triangles between centerline(i), centerline(i+1), and trans(i, i+1)
-% (the very first cell each C- creates after reflecting)
 for i = 1:N-1
     if isnan(x_trans(i, i+1)); continue; end
+    if y_trans(i, i+1) < 0; continue; end  % skip if below centerline
     x3 = [x_center(i), x_center(i+1), x_trans(i, i+1)];
     y3 = [y_center(i), y_center(i+1), y_trans(i, i+1)];
     M3 = [M_center(i), M_center(i+1), M_trans(i, i+1)];
