@@ -19,6 +19,24 @@ close all;
 clear;
 clc;
 
+% UofA colors!
+arizonaBlue = [12, 35, 75] ./ 255;
+arizonaRed = [171, 5, 32] ./ 255;
+midnight = [0, 28, 72] ./ 255;
+azurite = [30,82,136] ./ 255;
+oasis = [55, 141, 189] ./ 255;
+chili = [139, 0, 21] ./ 255;
+bloom = [239, 64, 86] ./255;
+sky = [192,211,235] ./255;
+leaf = [112, 184, 101] ./255;
+river = [0, 125, 132] ./255;
+mesa = [169, 92, 66] ./255;
+
+% Set interpereter to Latex. Lets us use subscripts and greek characters.
+set(groot, 'defaultTextInterpreter', 'latex');
+set(groot, 'defaultAxesTickLabelInterpreter', 'latex');
+set(groot, 'defaultLegendInterpreter', 'latex');
+
 %% Given Values:
 % Known relationships, and input parameters.
 
