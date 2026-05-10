@@ -71,7 +71,7 @@ Tl = Tl_air; % Temperature our fluid (air) liquifies at
 M_e = 6; % Exit mach
 M_t = 1; % Throat
 
-N = 10; %Number of waves
+N = 40; %Number of waves
 
 % h_n is given as the full diameter...
 h_n = 350/2; %Nozzle height in mm
