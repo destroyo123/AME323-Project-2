@@ -203,8 +203,12 @@ arcpoints = @(delta) deal( h_t .* sind(delta), h_t.*(2-cosd(delta)));
 [xThroatCircle, yThroatCircle] = arcpoints(deltaThroatCircle);
 
 % Source points of the initial characteristic lines (waves)
-theta0 = deltaThroatCircle(2:end);
-nu0 = theta0;
+nu0 = deltaThroatCircle(2:end);
+theta0 = zeros(size(nu0));  % FIXED HIGH-MACH DIVERGENCE: start from sonic flow direction
+
+% Originally was this but needed to delete due to high-mach divergence.
+%theta0 = deltaThroatCircle(2:end);
+%nu0 = theta0;
 
 Kp0 = nu0 + theta0;
 Km0 = nu0 - theta0;
@@ -230,7 +234,7 @@ for i = 1:N
     % Compute slope
     % Intersect with y=0 (x-coordinate of first wave reflections)
 
-    % Flow angle at centerline must zero by symmetric waves cancelling
+    % Flow angle at centerline must zero due to symmetry
     delta_arr(i,1) = 0;
 
     % K+ was already calculated and stays the same
@@ -250,11 +254,46 @@ for i = 1:N
 
     % Now we actually find the intersection since we know delta and mu
     % so we can find the slope using those:
-    slope = tand((0.5) * ((theta0(i) - mu0(i))  + (0-mu_arr(i,1)))  );
+    slope = tand(theta0(i) + mu0(i));
+    dx = x0(i) + (-y0(i) / slope);
+    
+    if dx < x0(i)
+        % flip to physically correct branch
+        slope = tand(theta0(i) - mu0(i));
+        dx = x0(i) + (-y0(i) / slope);
+    end
 
     % And now find the intersection of the wave and centerline
     % Using the slope we just found
     % and save those coordinates:
     x_arr(i,1) = x0(i) + (-y0(i) / slope); % slope & initial y gives x to hit y=0.
     y_arr(i,1) = 0; % on centerline y=0.
+end
+
+%% Plot what we have so far (verify it looks ok)
+debugGraphs = true;
+
+if (debugGraphs)
+    figure;
+    hold on;
+    grid on;
+    axis equal;
+
+    % Plot the circulr throat arc
+    plot(xThroatCircle, yThroatCircle, 'b-', 'Linewidth', 2);
+
+    % Plot the initial characteristic lines going from throat to center
+    plot(x0, y0, 'ko', 'MarkerFaceColor', 'k');
+
+    % Plot the centerline intersections
+    plot(x_arr(:,1), y_arr(:,1), 'ro', 'MarkerFaceColor', 'r');
+
+    % Plot the centerline itself:
+    yline(0, 'k--');
+
+    xlabel("x (m)");
+    ylabel('y (m)');
+    title('Check: Throat expansion to max angle, and first waves to centerline');
+
+    legend('Throat arc', 'Initial wave sources', 'Centerline intersections', 'centerline');
 end
