@@ -236,59 +236,61 @@ y0 = yThroatCircle(2:end);
 
 mu0 = muThroatCircle(2:end);
 
-%% Calculating Centerline Reflections (Task 1)
-% The first big step to getting the nozzle geometry.
+% %% Calculating Centerline Reflections (Task 1)
+% % The first big step to getting the nozzle geometry.
+% 
+% % For each initial throat wave 'i'
+% for i = 1:N
+%     % ----- THEORY -----
+%     % At centerline:
+%     % delta = 0
+%     % Kp is constant from source (derived in prior section)
+%     % So:
+%     %   nu = Kp
+%     %   Km = nu
+%     % Compute: M, mu
+%     % Compute slope
+%     % Intersect with y=0 (x-coordinate of first wave reflections)
+% 
+%     % Flow angle at centerline must zero due to symmetry
+%     delta_arr(i,1) = 0;
+% 
+%     % K+ was already calculated and stays the same
+%     Kp_arr(i,1) = Kp0(i); % From earlier array.
+% 
+%     % Then do the math: nu = (K+  + K- ) / 2
+%     % Where at centerline delta = 0
+%     % So K+  =  K-  = nu (reflection)
+%     nu_arr(i,1) = Kp_arr(i,1); % nu = K+
+%     Km_arr(i,1) = nu_arr(i,1); % K- = K+ = nu
+% 
+%     % Find Mach of the centerline given by 'nu'
+%     M_arr(i,1) = meyerMach(nu_arr(i,1), gamma);
+% 
+%     % Use that mach to find the mach angle
+%     mu_arr(i,1) = muFromNu(nu_arr(i,1));
+% 
+%     % Now we actually find the intersection since we know delta and mu
+%     % so we can find the slope using those:
+%     slope = tand(theta0(i) + mu0(i));
+%     dx = x0(i) + (-y0(i) / slope);
+% 
+%     if dx < x0(i)
+%         % flip to physically correct branch
+%         slope = tand(theta0(i) - mu0(i));
+%         dx = x0(i) + (-y0(i) / slope);
+%     end
+% 
+%     % And now find the intersection of the wave and centerline
+%     % Using the slope we just found
+%     % and save those coordinates:
+%     x_arr(i,1) = x0(i) + (-y0(i) / slope); % slope & initial y gives x to hit y=0.
+%     y_arr(i,1) = 0; % on centerline y=0.
+% end
 
-% For each initial throat wave 'i'
-for i = 1:N
-    % ----- THEORY -----
-    % At centerline:
-    % delta = 0
-    % Kp is constant from source (derived in prior section)
-    % So:
-    %   nu = Kp
-    %   Km = nu
-    % Compute: M, mu
-    % Compute slope
-    % Intersect with y=0 (x-coordinate of first wave reflections)
+%% CHECK YOURSELF!!
+% Plot what we have so far (verify it looks ok)
 
-    % Flow angle at centerline must zero due to symmetry
-    delta_arr(i,1) = 0;
-
-    % K+ was already calculated and stays the same
-    Kp_arr(i,1) = Kp0(i); % From earlier array.
-    
-    % Then do the math: nu = (K+  + K- ) / 2
-    % Where at centerline delta = 0
-    % So K+  =  K-  = nu (reflection)
-    nu_arr(i,1) = Kp_arr(i,1); % nu = K+
-    Km_arr(i,1) = nu_arr(i,1); % K- = K+ = nu
-
-    % Find Mach of the centerline given by 'nu'
-    M_arr(i,1) = meyerMach(nu_arr(i,1), gamma);
-
-    % Use that mach to find the mach angle
-    mu_arr(i,1) = muFromNu(nu_arr(i,1));
-
-    % Now we actually find the intersection since we know delta and mu
-    % so we can find the slope using those:
-    slope = tand(theta0(i) + mu0(i));
-    dx = x0(i) + (-y0(i) / slope);
-    
-    if dx < x0(i)
-        % flip to physically correct branch
-        slope = tand(theta0(i) - mu0(i));
-        dx = x0(i) + (-y0(i) / slope);
-    end
-
-    % And now find the intersection of the wave and centerline
-    % Using the slope we just found
-    % and save those coordinates:
-    x_arr(i,1) = x0(i) + (-y0(i) / slope); % slope & initial y gives x to hit y=0.
-    y_arr(i,1) = 0; % on centerline y=0.
-end
-
-%% Plot what we have so far (verify it looks ok)
 debugGraphs = true;
 
 if (debugGraphs)
@@ -311,7 +313,8 @@ if (debugGraphs)
 
     xlabel("x (m)");
     ylabel('y (m)');
-    title('Check: Throat expansion to max angle, and first waves to centerline');
+    title('First Waves hitting centerline');
 
     legend('Throat arc', 'Initial wave sources', 'Centerline intersections', 'centerline');
 end
+
