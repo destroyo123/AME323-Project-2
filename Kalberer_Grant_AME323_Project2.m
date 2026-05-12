@@ -216,7 +216,7 @@ function D = designNozzleMOC(N,Me,g,hT)
 
     % Smooth circular throat arc. At x=0,y=hT the wall is horizontal.
     W.x = hT*sin(th);
-    W.y = hT + hT*(1-cos(th));
+    W.y = 2*hT - hT*cos(th);  % = hT*(2 - cos(th))
     W.theta = th;
     W.nu = nu;
     W.M = M;
