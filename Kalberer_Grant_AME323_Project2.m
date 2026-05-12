@@ -77,33 +77,6 @@ ylabel('| (h_e/h_t)_{MOC} - (A_e/A*)_{isentropic} | / (A_e/A*)');
 title('Grid convergence of geometric exit area ratio');
 saveas(gcf,fullfile(figDir,'01_grid_convergence.png'));
 
-%% -------------------- Export Wall for SolidWorks -----------------------
-
-% Build ordered wall contour:
-%   1) Exact throat point
-%   2) Circular arc throat section
-%   3) MOC straightening wall section
-
-x_export = D.wall.x(:);
-y_export = D.wall.y(:);
-
-% Z = 0 for all points
-z_export = zeros(size(x_export));
-
-% Combine into Nx3 array
-sw_export = [x_export, y_export, z_export];
-
-% Remove accidental duplicate points while preserving order
-sw_export = unique(sw_export,'rows','stable');
-
-% Export CSV with NO headers
-csvFileName = 'nozzle_wall_coords.csv';
-writematrix(sw_export,csvFileName);
-
-fprintf('\nExported SolidWorks wall contour:\n');
-fprintf('  %s\n',csvFileName);
-fprintf('Format: x, y, z (meters)\n');
-fprintf('Points exported: %d\n\n',size(sw_export,1));
 
 %% ------------------------- Final MOC design ----------------------------
 D = designNozzleMOC(N,Me,gamma,hThroat);
@@ -138,6 +111,34 @@ xlabel('x [m]'); ylabel('Nondimensional value');
 title('Centerline distributions from throat to exit');
 legend('M','p/p_0','T/T_0','Location','best');
 saveas(gcf,fullfile(figDir,'06_centerline_distributions.png'));
+
+%% -------------------- Export Wall for SolidWorks -----------------------
+
+% Build ordered wall contour:
+%   1) Exact throat point
+%   2) Circular arc throat section
+%   3) MOC straightening wall section
+
+x_export = D.wall.x(:);
+y_export = D.wall.y(:);
+
+% Z = 0 for all points
+z_export = zeros(size(x_export));
+
+% Combine into Nx3 array
+sw_export = [x_export, y_export, z_export];
+
+% Remove accidental duplicate points while preserving order
+sw_export = unique(sw_export,'rows','stable');
+
+% Export CSV with NO headers
+csvFileName = 'nozzle_wall_coords.txt';
+writematrix(sw_export,csvFileName);
+
+fprintf('\nExported SolidWorks wall contour:\n');
+fprintf('  %s\n',csvFileName);
+fprintf('Format: x, y, z (meters)\n');
+fprintf('Points exported: %d\n\n',size(sw_export,1));
 
 %% --------------------- Tunnel operating calculations -------------------
 psia2Pa = 6894.757293168;
