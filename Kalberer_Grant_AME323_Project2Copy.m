@@ -71,7 +71,7 @@ Tl = Tl_air; % Temperature our fluid (air) liquifies at
 M_e = 6; % Exit mach
 M_t = 1; % Throat
 
-N = 40; %Number of waves
+N = 100; %Number of waves
 
 % h_n is given as the full diameter...
 h_n = 350/2; %Nozzle height in mm
@@ -1424,6 +1424,39 @@ ylabel('$y$ (m)', 'FontSize', 13);
 title(sprintf('MOC Minimum Length Nozzle ($M_e = %.1f$, $N = %d$ waves, $\\gamma = %.2f$)', ...
     M_e, N, gamma), 'FontSize', 14);
 
+%% ========================================================================
+%  EXPORT WALL CONTOUR FOR SOLIDWORKS
+%  ========================================================================
+
+% Use the ACTUAL nozzle contour points in geometric order:
+%   1) Circular throat arc
+%   2) MOC wall points
+
+% Remove duplicate first point of wall section because it is already
+% the last point of the throat arc.
+x_export = [xArc_fine(:); x_wall_pts(2:end)];
+y_export = [yArc_fine(:); y_wall_pts(2:end)];
+
+x_export = 1000.*x_export;
+y_export = 1000.*y_export;
+
+% Z column = 0 for all points
+z_export = zeros(size(x_export));
+
+% Combine into Nx3 matrix
+sw_export = [x_export, y_export, z_export];
+
+% Optional: remove accidental duplicate rows
+sw_export = unique(sw_export, 'rows', 'stable');
+
+% Export CSV with NO headers
+writematrix(sw_export, 'solidworksNozzleCoords.txt');
+
+fprintf('\nExported SolidWorks contour to:\n');
+fprintf('  nozzle_wall_coordinates.csv\n');
+fprintf('Format: x, y, z (meters)\n');
+fprintf('Points exported: %d\n\n', size(sw_export,1));
+
 hold off;
 
 % -------------------------------------------------------------------------
@@ -1501,6 +1534,9 @@ end
 fprintf('\n--- Plotting Complete ---\n');
 fprintf('Wall contour points (x, y, delta):\n');
 fprintf('%10s %10s %10s\n', 'x (mm)', 'y (mm)', 'delta (deg)');
+for i = 1:length(preWall_x)
+    fprintf('%10.3f, %10.3f, 0\n', preWall_x(i)*1000, preWall_y(i)*1000);
+end
 for i = 1:length(x_wall_pts)
-    fprintf('%10.3f %10.3f %10.2f\n', x_wall_pts(i)*1000, y_wall_pts(i)*1000, delta_wall_pts(i));
+    fprintf('%10.3f, %10.3f, %10.2f\n', x_wall_pts(i)*1000, y_wall_pts(i)*1000, delta_wall_pts(i));
 end
