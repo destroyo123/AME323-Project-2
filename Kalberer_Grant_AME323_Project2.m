@@ -24,15 +24,16 @@ Nstudy = [8 12 16 24 32 48 65 80 100 130]; % convergence study wave counts
 exitHeight = 0.350;            % full nozzle exit height [m]
 width      = 0.500;            % nozzle/tunnel width [m]
 pb_psia    = 0.100;            % maintained test-section static pressure [psia]
-p0max_psia = 500.0;            % maximum regulator total pressure [psia]
+p0max_psia = 2000.0;            % maximum regulator total pressure [psia]
 Tmin_free  = 55.0;             % minimum allowable free-stream static T [K]
 
 tankVolume = 40.0;             % compressed-air tank volume [m^3]
 tankTemp   = 300.0;            % approximately constant tank temperature [K]
-tankInitialPressure_psia = p0max_psia; % assumed full tank pressure [psia]
+tankInitialPressure_psia = 2000.0; % storage tank initial/full pressure [psia]
 
 figDir = fullfile(pwd,'Project2_figures');
 if ~exist(figDir,'dir'), mkdir(figDir); end
+
 
 %% ---------------------- Basic design quantities ------------------------
 nu_e       = prandtlMeyer(Me,gamma);
